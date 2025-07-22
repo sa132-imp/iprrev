@@ -1,0 +1,323 @@
+body {
+    margin: 0;
+    padding: 15px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* ========== BACKGROUND MODES ========== */
+body.input-mode {
+    background-color: white;
+}
+
+body.readonly-mode {
+    background-color: #f0f0f0;
+}
+
+body.edit-mode {
+    background-color: #ffe6f0;
+}
+
+/* ========== MODE BANNERS ========== */
+.input-banner,
+.completed-banner,
+.editing-banner {
+    padding: 8px 12px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+}
+
+.input-banner {
+    background: #e6f2ff;
+    border-color: #99ccff;
+}
+
+.completed-banner {
+    background: #e8e8e8;
+    border-color: #b3b3b3;
+}
+
+.editing-banner {
+    background: #ffccdd;
+    border-color: #cc99aa;
+}
+
+/* ========== FULL PAGE GRID ========== */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+/* ========== LEFT PANEL ========== */
+.reviewer-panel {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+.trust-section {
+    margin-top: 20px;
+}
+
+.trust-section h3 {
+    margin-bottom: 6px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.trust-section a {
+    display: block;
+    margin-bottom: 5px;
+    text-decoration: none;
+    color: #005eb8;
+    font-size: 13px;
+}
+
+/* ========== FORM GRID INSIDE FORM TAG ========== */
+form#form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ========== FORM ELEMENTS ========== */
+label {
+    font-weight: bold;
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+input,
+select,
+textarea {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 13px;
+    width: 100%;
+}
+
+/* ✅ Readonly styling for pre-filled inputs in input mode */
+input.readonly,
+select.readonly,
+textarea.readonly {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    color: #555;
+}
+
+/* ========== TEXTAREA ========== */
+textarea.scroll-textarea {
+    resize: vertical;
+    min-height: 60px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* ========== BUTTONS ========== */
+button {
+    margin-top: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 4px;
+    border: none;
+    background-color: #005eb8;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #003f7d;
+}
+
+.input-new-record-btn {
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+/* ========== SHORT FIELDS (UID + OrgCode) ========== */
+.short-field-group {
+    display: flex;
+    gap: 20%;
+    margin-bottom: 10px;
+}
+
+.short-field-group .field-block {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 40%;
+}
+
+.short-field-group label {
+    margin-bottom: 4px;
+}
+
+.short-field-group input {
+    margin-top: 4px;
+}
+
+.search-button {
+    margin-bottom: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 4px;
+    border: none;
+    background-color: #005eb8;
+    color: white;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #003f7d;
+}
+
+/* ========== MODAL ========== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal.show {
+    display: block;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #999;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+}
+
+.modal-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.modal-content ul li {
+    border-bottom: 1px solid #eee;
+    padding: 6px 0;
+}
+
+.close {
+    float: right;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* ✅ Summary modal "Done" button */
+#doneBtn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 8px 14px;
+    background-color: #005eb8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#doneBtn:hover {
+    background-color: #003f7d;
+}
+
+/* ✅ Highlight for TrustName in modal */
+.highlight-trustname {
+    background-color: #d5f7d5;
+    padding: 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* ========== TRUST SECTION SCROLL ========== */
+.trust-section {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: #fdfdfd;
+}
+
+.trust-section div a {
+    display: block;
+    padding: 6px 8px;
+    border-bottom: 1px solid #ddd;
+    text-decoration: none;
+    color: #005eb8;
+}
+
+.trust-section div a:hover {
+    background-color: #f2f2f2;
+}
+
+/* ========== FORM BUTTONS INLINE ========== */
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.form-buttons button {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+select[multiple] {
+    min-height: 80px;
+    padding: 6px;
+    font-size: 13px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-row {
+    margin-top: -8px;
+    margin-bottom: 12px;
+}
+
+.count-badge {
+    display: inline-block;
+    background-color: #ccc;
+    color: #333;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 8px;
+    margin-left: 6px;
+    border-radius: 20px;
+}
