@@ -3,6 +3,9 @@ from datetime import datetime, date
 import pandas as pd
 import sqlite3
 import os
+import io
+import csv
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this to a secure random string
@@ -23,8 +26,6 @@ trusts_df['Trust name'] = trusts_df['Trust name'].str.strip().str.rstrip(',')
 trust_names = sorted(trusts_df['Trust name'].tolist())
 
 # ====== LOGIN REQUIRED DECORATOR ======
-from functools import wraps
-
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -178,6 +179,32 @@ def form():
                            done_list=done_list,
                            selected_trust=selected_trust,
                            trust_data=trust_data)
+
+@app.route('/download')
+@login_required
+def download_csv():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM submissions ORDER BY SubmissionTimestamp DESC")
+    rows = cursor.fetchall()
+    headers = [description[0] for description in cursor.description]
+    conn.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(headers)
+    writer.writerows(rows)
+
+    output.seek(0)
+    return (
+        output.getvalue(),
+        200,
+        {
+            "Content-Type": "text/csv",
+            "Content-Disposition": "attachment; filename=submissions.csv"
+        }
+    )
 
 # ====== RENDER.COM COMPAT ======
 if __name__ == '__main__':
