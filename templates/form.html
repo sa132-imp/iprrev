@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trust Review Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body
+    {% if edit_mode %}class="edit-mode"
+    {% elif read_only %}class="readonly-mode"
+    {% elif input_mode %}class="input-mode"
+    {% endif %}
+>
+    <h1>Trust Review Form</h1>
+
+    {% if edit_mode %}
+    <div class="editing-banner">
+        ⚠️ You are editing a previous submission. Your updates will create a new entry.
+    </div>
+    {% elif read_only %}
+    <div class="completed-banner">
+        ✅ This trust has already been completed. You are viewing the submitted answers.
+    </div>
+    {% elif input_mode %}
+    <div class="input-banner">
+        🛠️ Fill out the form and submit when done.
+    </div>
+    {% endif %}
+
+    <div class="form-grid">
+        <div class="reviewer-panel">
+            <form action="/set_reviewer" method="POST">
+                <label for="reviewer">Reviewer</label>
+                <select name="reviewer" id="reviewer">
+                    <option value="">Select...</option>
+                    {% for name in ['Adam', 'Jen', 'Karen', 'Sam'] %}
+                        <option value="{{ name }}" {% if reviewer == name %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Go</button>
+            </form>
+
+            {% if reviewer %}
+            <div class="trust-section">
+                <h3>To Do <span class="count-badge">{{ to_do_list | length }}</span></h3>
+                {% for trust in to_do_list %}
+                    <div>
+                        <a href="/select_trust/{{ trust }}" {% if selected_trust == trust %}style="font-weight:bold;"{% endif %}>
+                            {{ trust }}
+                        </a>
+                    </div>
+                {% endfor %}
+                {% if not to_do_list %}
+                    <p>No trusts to do.</p>
+                {% endif %}
+            </div>
+
+            <div class="trust-section">
+                <h3>Done <span class="count-badge">{{ done_list | length }}</span></h3>
+                {% for trust in done_list %}
+                    <div>
+                        <a href="/select_trust/{{ trust }}" {% if selected_trust == trust %}style="font-weight:bold;"{% endif %}>
+                            {{ trust }}
+                        </a>
+                    </div>
+                {% endfor %}
+                {% if not done_list %}
+                    <p>No trusts completed yet.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="POST" id="form" style="grid-column: span 3;" onsubmit="return validateForm()">
+            <input type="hidden" name="edit_mode" value="{{ 'true' if edit_mode else 'false' }}">
+            <div class="form-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                {% for col in [1, 2, 3] %}
+                <div class="form-column">
+                    {% for field in field_configs if field.get('Column') == col and field['Field Name'] != 'UID' %}
+                        {% set field_name = field['Field Name'] %}
+                        {% set field_label = field['Question Label'] %}
+                        {% set field_type = field['Input Type (text, number, dropdown, checkbox, date, etc.)'] %}
+                        {% set required = field.get('Required? (Yes/No)', '').lower() == 'yes' %}
+                        {% set always_locked = field_name in ['TrustName', 'UID', 'OrgCode', 'SystemName', 'RegionName', 'TrustType', 'Assigned'] %}
+                        {% set is_readonly = read_only or (edit_mode and always_locked) %}
+                        {% set is_prefilled = input_mode and always_locked %}
+
+                        {% if field_name == 'Link' %}
+                            <button type="button" id="searchBtn" class="search-button">🔍 Search Google for Board Papers</button>
+                        {% endif %}
+
+                        {% if field_name == 'OrgCode' %}
+                            <div class="short-field-group">
+                                {% set uid_field = field_configs | selectattr("Field Name", "equalto", "UID") | list | first %}
+                                <div class="field-block">
+                                    <label for="UID">{{ uid_field['Question Label'] }}</label>
+                                    <input type="text" name="UID" id="UID" value="{{ trust_data.get('UID', '') }}"
+                                        data-label="{{ uid_field['Question Label'] }}"
+                                        {% if is_readonly %}readonly class="readonly"{% elif is_prefilled %}class="readonly"{% endif %}
+                                        maxlength="6">
+                                </div>
+                                <div class="field-block">
+                                    <label for="OrgCode">{{ field_label }}</label>
+                                    <input type="text" name="OrgCode" id="OrgCode" value="{{ trust_data.get('OrgCode', '') }}"
+                                        data-label="{{ field_label }}"
+                                        {% if is_readonly %}readonly class="readonly"{% elif is_prefilled %}class="readonly"{% endif %}
+                                        maxlength="6">
+                                </div>
+                            </div>
+
+                        {% else %}
+                            <label for="{{ field_name }}">
+                                {{ field_label }}{% if required %} <span style="color:red">*</span>{% endif %}
+                            </label>
+
+                            {% if field_name == 'Additional' %}
+                                <select name="Additional" multiple
+                                    data-label="{{ field_label }}"
+                                    {% if is_readonly %}disabled{% elif is_prefilled %}class="readonly"{% endif %}
+                                    {% if required %}data-required="true"{% endif %}>
+                                    {% for opt in field['Dropdown Options (if applicable)'].split(',') %}
+                                        <option value="{{ opt.strip() }}"
+                                            {% if trust_data.get('Additional') and opt.strip() in trust_data.get('Additional') %}selected{% endif %}>
+                                            {{ opt.strip() }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            {% elif field_type == 'dropdown' %}
+                                <select name="{{ field_name }}"
+                                    data-label="{{ field_label }}"
+                                    {% if is_readonly %}disabled{% elif is_prefilled %}class="readonly"{% endif %}
+                                    {% if required %}data-required="true"{% endif %}>
+                                    <option value="">Pick...</option>
+                                    {% for opt in field['Dropdown Options (if applicable)'].split(',') %}
+                                        <option value="{{ opt.strip() }}"
+                                            {% if trust_data.get(field_name) == opt.strip() %}selected{% endif %}>{{ opt.strip() }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% elif field_type == 'checkbox' %}
+                                <input type="checkbox" name="{{ field_name }}" value="1"
+                                    data-label="{{ field_label }}"
+                                    {% if trust_data.get(field_name) == '1' %}checked{% endif %}
+                                    {% if is_readonly %}disabled{% endif %}>
+                            {% elif field_type == 'date' %}
+                                <input type="date" name="{{ field_name }}" value="{{ trust_data.get(field_name, current_date) }}"
+                                    data-label="{{ field_label }}"
+                                    {% if is_readonly %}readonly{% elif is_prefilled %}class="readonly"{% endif %}
+                                    {% if required %}data-required="true"{% endif %}>
+                            {% elif field_type == 'textarea' %}
+                                <textarea name="{{ field_name }}" rows="5" class="scroll-textarea"
+                                    data-label="{{ field_label }}"
+                                    {% if is_readonly %}readonly{% elif is_prefilled %}class="readonly"{% endif %}
+                                    {% if required %}data-required="true"{% endif %}>{{ trust_data.get(field_name, '') }}</textarea>
+                            {% else %}
+                                <input type="text" name="{{ field_name }}" value="{{ trust_data.get(field_name, '') }}"
+                                    data-label="{{ field_label }}"
+                                    {% if is_readonly %}readonly class="readonly"
+                                    {% elif is_prefilled %}class="readonly"{% endif %}
+                                    {% if required %}data-required="true"{% endif %}>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if col == 3 and edit_mode %}
+                        <label for="EditReason">Reason for edit / change? <span style="color:red">*</span></label>
+                        <textarea name="EditReason" id="EditReason" class="scroll-textarea" rows="3"
+                                  data-required="true" data-label="Reason for edit / change?">{{ trust_data.get('EditReason', '') }}</textarea>
+                    {% endif %}
+
+                    {% if col == 3 %}
+                    <div class="form-buttons">
+                        {% if input_mode %}
+                            <button type="submit">Submit</button>
+                            <button type="button" onclick="clearForm()">Clear Form</button>
+                        {% elif edit_mode %}
+                            <button type="submit">Re-submit</button>
+                            <a href="/cancel_edit"><button type="button">Cancel Editing</button></a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </form>
+
+        {% if read_only and selected_trust %}
+        <div class="form-buttons" style="margin-top: 10px;">
+            <form method="POST" action="/edit_trust/{{ selected_trust }}">
+                <button type="submit">Edit This Record</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if submitted_data and selected_trust %}
+    {% set modal_fields = ['TrustName', 'Assigned', 'Date', 'PaperDate', 'SPC', 'MDC', 'Points', 'Recalcs', 'IconSums', 'NumMets', 'Narrative', 'Consistent', 'Additional','Rating', 'Comments'] %}
+    <div id="summaryModal" class="modal show">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Submission Summary</h3>
+            <ul>
+                {% for field in field_configs if field['Field Name'] in modal_fields %}
+                    <li class="{% if field['Field Name'] == 'TrustName' %}highlight-trustname{% endif %}">
+                        <strong>{{ field['Question Label'] }}</strong> {{ submitted_data.get(field['Field Name'], '') }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <form method="POST" action="/edit_trust/{{ submitted_data.get('TrustName') }}">
+                <button type="submit">Edit This Record</button>
+            </form>
+            <button id="doneBtn" onclick="closeModal()">Done</button>
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+        function clearForm() {
+            document.querySelectorAll("input, select, textarea").forEach(el => {
+                if (el.type === "checkbox") {
+                    el.checked = false;
+                } else if (el.multiple) {
+                    Array.from(el.options).forEach(option => option.selected = false);
+                } else {
+                    el.value = "";
+                }
+            });
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("summaryModal");
+            if (modal) {
+                modal.classList.remove("show");
+                window.location.href = "/";
+            }
+        }
+
+        window.addEventListener("load", () => {
+            const modal = document.getElementById("summaryModal");
+            if (modal) modal.classList.add("show");
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchBtn = document.getElementById("searchBtn");
+            const trustNameInput = document.querySelector("input[name='TrustName']");
+            if (searchBtn && trustNameInput) {
+                searchBtn.addEventListener("click", function () {
+                    const trustName = trustNameInput.value.trim();
+                    if (trustName) {
+                        const query = encodeURIComponent(trustName + " board papers");
+                        window.open(`https://www.google.com/search?q=${query}`, "_blank");
+                    } else {
+                        alert("Trust Name is empty. Please select a trust first.");
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
