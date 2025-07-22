@@ -1,0 +1,22 @@
+Field Name,Question Label,Column,"Input Type (text, number, dropdown, checkbox, date, etc.)",Dropdown Options (if applicable),Required? (Yes/No),Notes
+TrustName,Trust Name:,1,text,,Yes,"dropdown list is about 200 options long, can it be linked to a table and searchable?"
+Assigned,Assigned To:,1,text,,Yes,Pre-filled from data table
+Date,Date Reviewed:,1,date,,Yes,
+PaperDate,Date of Papers:,1,dropdown,"Apr25 - M1,May25 - M2,Jun25 - M3,Jul25 - M4,Aug25 - M5,Sept25 - M6,Oct25 - M7,Nov25 - M8,Dec25 - M9,Jan26 - M10,Feb26 - M11,Mar26 - M12",No,
+Link,Link to Papers:,1,text,,No,
+UID,UniqueID:,1,text,,Yes,Pre-filled from data table
+OrgCode,Org Code:,1,text,,Yes,Pre-filled from data table
+SystemName,System Name:,1,text,,Yes,Pre-filled from data table
+RegionName,Region Name:,1,text,,Yes,Pre-filled from data table
+TrustType,Trust Type:,1,text,,Yes,Pre-filled from data table
+SPC,Adoption of SPC in IQPR?,2,dropdown,"4 - IQPR fully converted (>80%),3 - IQPR some conversion (20% - 80%),2- IQPR limited conversion (1%-20%),1- IQPR not converted (0%)",Yes,
+MDC,Are SPC charts using MDC approach?,2,dropdown,"4 - Yes SPC charts use MDC colour conventions  (>80%),3 - Partly using MDC colour conventions (20%-80%),2  -IQPR limited use of MDC colour conventions(1%-20%),1  -No IQPR not using MDC colour conventions(0%)",Yes,
+Points,Appropriate use of data points?,2,dropdown,"3 - Majority of charts using appropriate no. of data points (>80%) (2019 onwards),2 - Some charts using correct number of data points (20% - 80%),1 -  Most charts have too few data points (13 or less),1 -  Most charts have too many (data from 2018 or earlier)",Yes,
+Recals,Recalculations?,2,dropdown,"4 - Appropriate use of recalculations (>80%),3 - Some evidence of correct use of recalculations  (20% - 80%),2 - Limited evidence of correct use of recalculations (<20%),1 - No evidence of correct use of recalculations (0%)",Yes,
+IconSums,Icon summaries?,2,dropdown,"4 - Appropriate use of Icon summaries (>80%),3 - Some evidence of correct use of Icon summaries (20% - 80%),2 - Limited evidence of correct use of Icon summaries (<20%),1 - No evidence of correct use of Icon summaries (0%)",Yes,
+NumMets,Appropriate type and quantity of metrics?,2,dropdown,"3- Metrics cover appropriate performance quality and workforce metrics,1 - Too many metrics ,1 - Too few metrics",Yes,
+Narrative,Narrative and Structure?,2,dropdown,"3 - Well-structured analytical and operational narrative with good content,2 - Average structured analytical and operational narrative with average content ,1 - Poorly structured analytical and operational narrative,",Yes,
+Consistent,Is the report style consistent across different domains?,2,dropdown,"3 - Yes report remains consistent across domains,2 - Report partly consistent across domains,1 - No report consistency across domain,",Yes,
+Additional,Additional features:,2,dropdown,"Finance,Benchmarking,Triangulation,Other (mention in comments)",Yes,
+Rating,Overall Rating (5 = excellent),3,dropdown,"5,4,3,2,1",Yes,
+Comments,Comments (free text),3,textarea,,Yes,

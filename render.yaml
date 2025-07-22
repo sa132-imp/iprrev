@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: trust-review-form
+    env: python
+    buildCommand: ""
+    startCommand: python trust_form_flask.py
+    plan: free
